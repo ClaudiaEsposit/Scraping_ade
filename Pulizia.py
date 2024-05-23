@@ -48,7 +48,8 @@ def clean(input):
     input[['nr.crono', 'year.crono']] = input['N. Cronologico'].str.split('/', expand=True)
     input[['nr.rgeppt', 'year.rgeppt']] = input['N.R.G.E PPT'].str.split('/', expand=True)
     input[['nr.repppt', 'year.repppt']] = input['N° Rep PPT'].str.split('/', expand=True)
-    input = input.drop(columns=['N. RG','N. Decreto','N° Repertorio','N. Cronologico','N.R.G.E PPT','N° Rep PPT'])
+    input['tipo_ricerca'] = input['RICERCA IQERA'].str.lower()
+    input = input.drop(columns=['N. RG','N. Decreto','N° Repertorio','N. Cronologico','N.R.G.E PPT','N° Rep PPT','RICERCA IQERA'])
 
     def update_year(year):
         if pd.isna(year):
@@ -71,6 +72,29 @@ def clean(input):
         input[col] = input[col].astype(str).str.split('.').str[0]
 
     input.replace('nan', np.nan, inplace=True)
+
+    mapping = {'albenga':'savona',
+    'chiavenna':'sondrio',
+    'cossato':'biella',
+    'macomer':'nuoro',
+    'isili':'nuoro',
+    'chiaromonte': 'lagonegro',
+    'orzinuovi' : 'brescia',
+    'ovada': 'acquiterme',
+    'pavullo nel frignano':'modena',
+    'ponte san pietro':'bergamo',
+    'romano di lombardia':'bergamo',
+    'san benedetto del tronto':'ascoli piceno',
+    'teano':'caserta',
+    'venezia 2 - mestre' : 'venezia',
+    'venosa':'potenza',
+    'vimercate':'monza'
+    }
+
+    input['Foro'] = (input['Foro']
+                    .str.lower()
+                    .replace(mapping)
+    )
 
     # input.to_excel('Input/Cleaned/input_v1.xlsx',index=False)
 
