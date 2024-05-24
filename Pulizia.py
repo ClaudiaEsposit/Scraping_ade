@@ -9,6 +9,7 @@ def split_and_expand(df, column_name):
 
 def clean(input):
     # input = pd.read_excel('Input/Raw/Ricerca F24.xlsx')
+    input['Debitore'] = input['Debitore'].str.strip()
 
     input = split_and_expand(input, 'N° Rep PPT')
     input['N. RG'] = (input['N. RG'].str.replace('Rg.', '', regex=False)
