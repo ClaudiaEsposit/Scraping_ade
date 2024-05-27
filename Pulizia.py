@@ -24,32 +24,42 @@ def clean(input):
     input['Debitore'] = input['Debitore'].str.strip()
 
     input = split_and_expand(input, 'N° Rep PPT')
-    input['N. RG'] = (input['N. RG'].str.replace('Rg.', '', regex=False)
+
+    if input['N. RG'].notna().any():
+        input['N. RG'] = (input['N. RG'].str.replace('Rg.', '', regex=False)
                     .str.replace('Nr.', '', regex=False)
                     .str.replace('-', '/', regex=False)
                     .str.strip()
                     )
-    input['N. Decreto'] = (input['N. Decreto'] .str.replace('Nr.', '', regex=False)
+        
+    if input['N. Decreto'].notna().any():
+        input['N. Decreto'] = (input['N. Decreto'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
-    input['N° Repertorio'] = (input['N° Repertorio'] .str.replace('Nr.', '', regex=False)
+        
+    if input['N° Repertorio'].notna().any():
+        input['N° Repertorio'] = (input['N° Repertorio'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
-    input['N. Cronologico'] = (input['N. Cronologico'] .str.replace('Nr.', '', regex=False)
+    if input['N. Cronologico'].notna().any():
+        input['N. Cronologico'] = (input['N. Cronologico'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
-    input['N.R.G.E PPT'] = (input['N.R.G.E PPT'] .str.replace('Nr.', '', regex=False)
+    if input['N.R.G.E PPT'].notna().any():
+        input['N.R.G.E PPT'] = (input['N.R.G.E PPT'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
-    input['N° Rep PPT'] = (input['N° Rep PPT'] .str.replace('Nr.', '', regex=False)
+    
+    if input['N° Rep PPT'].notna().any():
+        input['N° Rep PPT'] = (input['N° Rep PPT'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
                             # .str.replace('-', '/', regex=False)
                             .str.strip()
