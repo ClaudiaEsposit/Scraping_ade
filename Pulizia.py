@@ -3,11 +3,24 @@ import pandas as pd
 import numpy as np
 
 def split_and_expand(df, column_name):
-    df[column_name] = df[column_name].str.split(' - ')
-    df_expanded = df.explode(column_name)
-    return df_expanded
+    if df[column_name].notna().any():
+        df[column_name] = df[column_name].str.split(' - ')
+        df_expanded = df.explode(column_name)
+        return df_expanded
+    else:
+        return df
 
 def clean(input):
+
+    values_to_replace = ['Da Ricercare', 'NO DISP. BSS', '[Da Ricercare]']
+
+    input['N. RG'].replace(values_to_replace, np.nan, inplace=True)
+    input['N. Decreto'].replace(values_to_replace, np.nan, inplace=True)
+    input['N° Repertorio'].replace(values_to_replace, np.nan, inplace=True)
+    input['N. Cronologico'].replace(values_to_replace, np.nan, inplace=True)
+    input['N.R.G.E PPT'].replace(values_to_replace, np.nan, inplace=True)
+    input['N° Rep PPT'].replace(values_to_replace, np.nan, inplace=True)
+    
     input['Debitore'] = input['Debitore'].str.strip()
 
     input = split_and_expand(input, 'N° Rep PPT')
