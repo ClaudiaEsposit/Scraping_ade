@@ -31,6 +31,7 @@ def clean(input):
                     .str.replace('-', '/', regex=False)
                     .str.strip()
                     )
+        input[['nr.rg', 'year.rg']] = input['N. RG'].str.split('/', expand=True)
         
     if input['N. Decreto'].notna().any():
         input['N. Decreto'] = (input['N. Decreto'] .str.replace('Nr.', '', regex=False)
@@ -38,6 +39,7 @@ def clean(input):
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
+        input[['nr.decreto', 'year.decreto']] = input['N. Decreto'].str.split('/', expand=True)
         
     if input['N° Repertorio'].notna().any():
         input['N° Repertorio'] = (input['N° Repertorio'] .str.replace('Nr.', '', regex=False)
@@ -45,18 +47,23 @@ def clean(input):
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
+        input[['nr.repertorio', 'year.repertorio']] = input['N° Repertorio'].str.split('/', expand=True)
+
     if input['N. Cronologico'].notna().any():
         input['N. Cronologico'] = (input['N. Cronologico'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
+        input[['nr.crono', 'year.crono']] = input['N. Cronologico'].str.split('/', expand=True)
+        
     if input['N.R.G.E PPT'].notna().any():
         input['N.R.G.E PPT'] = (input['N.R.G.E PPT'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
                             .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
+        input[['nr.rgeppt', 'year.rgeppt']] = input['N.R.G.E PPT'].str.split('/', expand=True)
     
     if input['N° Rep PPT'].notna().any():
         input['N° Rep PPT'] = (input['N° Rep PPT'] .str.replace('Nr.', '', regex=False)
@@ -64,13 +71,8 @@ def clean(input):
                             # .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
+        input[['nr.repppt', 'year.repppt']] = input['N° Rep PPT'].str.split('/', expand=True)
 
-    input[['nr.rg', 'year.rg']] = input['N. RG'].str.split('/', expand=True)
-    input[['nr.decreto', 'year.decreto']] = input['N. Decreto'].str.split('/', expand=True)
-    input[['nr.repertorio', 'year.repertorio']] = input['N° Repertorio'].str.split('/', expand=True)
-    input[['nr.crono', 'year.crono']] = input['N. Cronologico'].str.split('/', expand=True)
-    input[['nr.rgeppt', 'year.rgeppt']] = input['N.R.G.E PPT'].str.split('/', expand=True)
-    input[['nr.repppt', 'year.repppt']] = input['N° Rep PPT'].str.split('/', expand=True)
     input['tipo_ricerca'] = input['RICERCA IQERA'].str.lower()
     input = input.drop(columns=['N. RG','N. Decreto','N° Repertorio','N. Cronologico','N.R.G.E PPT','N° Rep PPT','RICERCA IQERA'])
 
