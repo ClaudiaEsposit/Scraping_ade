@@ -10,20 +10,43 @@ def split_and_expand(df, column_name):
     else:
         return df
 
+def process_values(value):
+    if '-' in value and '/' in value:
+        return value
+    elif '-' in value:
+        return value.replace('-', '/')
+    else:
+        return value
+
+def process_column(column):
+    return column.apply(process_values)
+
+def split_and_expand_columns(df, columns):
+    for column_name in columns:
+        df[column_name] = process_column(df[column_name])
+        df = split_and_expand(df, column_name)
+    return df
+
 def clean(input):
 
     values_to_replace = ['Da Ricercare', 'NO DISP. BSS', '[Da Ricercare]']
 
-    input['N. RG'].replace(values_to_replace, np.nan, inplace=True)
+    """    input['N. RG'].replace(values_to_replace, np.nan, inplace=True)
     input['N. Decreto'].replace(values_to_replace, np.nan, inplace=True)
     input['N° Repertorio'].replace(values_to_replace, np.nan, inplace=True)
     input['N. Cronologico'].replace(values_to_replace, np.nan, inplace=True)
     input['N.R.G.E PPT'].replace(values_to_replace, np.nan, inplace=True)
-    input['N° Rep PPT'].replace(values_to_replace, np.nan, inplace=True)
+    input['N° Rep PPT'].replace(values_to_replace, np.nan, inplace=True)"""
+
+    for col in input.columns:
+        if col.startswith('N'):
+            input[col].replace(values_to_replace, np.nan, inplace=True)
     
     input['Debitore'] = input['Debitore'].str.strip()
 
-    input = split_and_expand(input, 'N° Rep PPT')
+    # input = split_and_expand(input, 'N° Rep PPT')
+    columns_to_process = [col for col in input.columns if col.startswith('N')]
+    input = split_and_expand_columns(input, columns_to_process)
 
     if input['N. RG'].notna().any():
         input['N. RG'] = (input['N. RG'].str.replace('Rg.', '', regex=False)
