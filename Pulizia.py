@@ -11,6 +11,8 @@ def split_and_expand(df, column_name):
         return df
 
 def process_values(value):
+    if isinstance(value, float) and np.isnan(value):
+        return value
     if '-' in value and '/' in value:
         return value
     elif '-' in value:
@@ -23,11 +25,14 @@ def process_column(column):
 
 def split_and_expand_columns(df, columns):
     for column_name in columns:
+        print(column_name)
         df[column_name] = process_column(df[column_name])
         df = split_and_expand(df, column_name)
     return df
 
 def clean(input):
+
+    input.replace('nan', np.nan, inplace=True)
 
     values_to_replace = ['Da Ricercare', 'NO DISP. BSS', '[Da Ricercare]']
 
@@ -46,28 +51,41 @@ def clean(input):
 
     # input = split_and_expand(input, 'N° Rep PPT')
     columns_to_process = [col for col in input.columns if col.startswith('N')]
-    input = split_and_expand_columns(input, columns_to_process)
+    columns_to_process.remove('NR_Contratto')
+    
+    # input = split_and_expand_columns(input, columns_to_process)
 
     if input['N. RG'].notna().any():
         input['N. RG'] = (input['N. RG'].str.replace('Rg.', '', regex=False)
                     .str.replace('Nr.', '', regex=False)
-                    .str.replace('-', '/', regex=False)
+                    .str.replace('N.', '', regex=False)
                     .str.strip()
                     )
         input[['nr.rg', 'year.rg']] = input['N. RG'].str.split('/', expand=True)
         
     if input['N. Decreto'].notna().any():
-        input['N. Decreto'] = (input['N. Decreto'] .str.replace('Nr.', '', regex=False)
+        input['N. Decreto'] = (input['N. Decreto'] 
+                            .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
-                            .str.replace('-', '/', regex=False)
+                            .str.replace('N.', '', regex=False)
                             .str.strip()
                         )
-        input[['nr.decreto', 'year.decreto']] = input['N. Decreto'].str.split('/', expand=True)
+        
+        split_result = input['N. RG'].str.split('/', expand=True)
+        # Handling inconsistent split results
+        if split_result.shape[1] == 2:
+            input[['nr.decreto', 'year.decreto']] = split_result
+        else:
+            print("Split did not produce the expected number of columns for some rows.")
+            # Handle the case here, e.g., by filling NaNs
+            split_result = split_result.reindex(columns=[0, 1]).fillna('missing')
+            input[['nr.decreto', 'year.decreto']] = split_result
+        # input[['nr.decreto', 'year.decreto']] = input['N. Decreto'].str.split('/', expand=True)
         
     if input['N° Repertorio'].notna().any():
         input['N° Repertorio'] = (input['N° Repertorio'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
-                            .str.replace('-', '/', regex=False)
+                            .str.replace('N.', '', regex=False)
                             .str.strip()
                         )
         input[['nr.repertorio', 'year.repertorio']] = input['N° Repertorio'].str.split('/', expand=True)
@@ -75,23 +93,25 @@ def clean(input):
     if input['N. Cronologico'].notna().any():
         input['N. Cronologico'] = (input['N. Cronologico'] .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
-                            .str.replace('-', '/', regex=False)
+                            .str.replace('N.', '', regex=False)
                             .str.strip()
                         )
         input[['nr.crono', 'year.crono']] = input['N. Cronologico'].str.split('/', expand=True)
         
     if input['N.R.G.E PPT'].notna().any():
-        input['N.R.G.E PPT'] = (input['N.R.G.E PPT'] .str.replace('Nr.', '', regex=False)
+        input['N.R.G.E PPT'] = (input['N.R.G.E PPT'] 
+                            .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
-                            .str.replace('-', '/', regex=False)
+                            .str.replace('N.', '', regex=False)
                             .str.strip()
                         )
         input[['nr.rgeppt', 'year.rgeppt']] = input['N.R.G.E PPT'].str.split('/', expand=True)
     
     if input['N° Rep PPT'].notna().any():
-        input['N° Rep PPT'] = (input['N° Rep PPT'] .str.replace('Nr.', '', regex=False)
+        input['N° Rep PPT'] = (input['N° Rep PPT'] 
+                            .str.replace('N.', '', regex=False)
+                            .str.replace('Nr.', '', regex=False)
                             .str.replace('Rg.', '', regex=False)
-                            # .str.replace('-', '/', regex=False)
                             .str.strip()
                         )
         input[['nr.repppt', 'year.repppt']] = input['N° Rep PPT'].str.split('/', expand=True)
