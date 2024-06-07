@@ -71,14 +71,14 @@ def clean(input):
                             .str.strip()
                         )
         
-        split_result = input['N. RG'].str.split('/', expand=True)
+        split_result = input['N. Decreto'].str.split('/', expand=True)
         # Handling inconsistent split results
         if split_result.shape[1] == 2:
             input[['nr.decreto', 'year.decreto']] = split_result
         else:
             print("Split did not produce the expected number of columns for some rows.")
             # Handle the case here, e.g., by filling NaNs
-            split_result = split_result.reindex(columns=[0, 1]).fillna('missing')
+            split_result = split_result.reindex(columns=[0, 1]).fillna('')
             input[['nr.decreto', 'year.decreto']] = split_result
         # input[['nr.decreto', 'year.decreto']] = input['N. Decreto'].str.split('/', expand=True)
         
