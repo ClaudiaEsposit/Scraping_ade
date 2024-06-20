@@ -120,7 +120,7 @@ def clean(input):
     input = input.drop(columns=['N. RG','N. Decreto','N° Repertorio','N. Cronologico','N.R.G.E PPT','N° Rep PPT','RICERCA IQERA'])
 
     def update_year(year):
-        if pd.isna(year):
+        if pd.isna(year) or year=='':
             return year
         year = int(year)
 
