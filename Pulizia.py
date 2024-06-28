@@ -61,7 +61,15 @@ def clean(input):
                     .str.replace('N.', '', regex=False)
                     .str.strip()
                     )
-        input[['nr.rg', 'year.rg']] = input['N. RG'].str.split('/', expand=True)
+        split_result = input['N. RG'].str.split('/', expand=True)
+        # Handling inconsistent split results
+        if split_result.shape[1] == 2:
+            input[['nr.rg', 'year.rg']] = split_result
+        else:
+            print("Split did not produce the expected number of columns for some rows.")
+            # Handle the case here, e.g., by filling NaNs
+            split_result = split_result.reindex(columns=[0, 1]).fillna('')
+            input[['nr.rg', 'year.rg']] = split_result
         
     if input['N. Decreto'].notna().any():
         input['N. Decreto'] = (input['N. Decreto'] 
@@ -96,7 +104,14 @@ def clean(input):
                             .str.replace('N.', '', regex=False)
                             .str.strip()
                         )
-        input[['nr.crono', 'year.crono']] = input['N. Cronologico'].str.split('/', expand=True)
+        split_result = input['N. Cronologico'].str.split('/', expand=True)
+        if split_result.shape[1] == 2:
+            input[['nr.crono', 'year.crono']] = split_result
+        else:
+            print("Split did not produce the expected number of columns for some rows.")
+            # Handle the case here, e.g., by filling NaNs
+            split_result = split_result.reindex(columns=[0, 1]).fillna('')
+            input[['nr.crono', 'year.crono']] = split_result
         
     if input['N.R.G.E PPT'].notna().any():
         input['N.R.G.E PPT'] = (input['N.R.G.E PPT'] 
